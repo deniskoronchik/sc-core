@@ -82,10 +82,15 @@ interface ScTemplateValue {
     alias: string
 };
 
+interface ScTripleOptions {
+    is_required: boolean,
+}
+
 interface ScTemplateTriple {
     source: ScTemplateValue,
     edge: ScTemplateValue,
     target: ScTemplateValue,
+    options: ScTripleOptions,
 };
 
 /* Class that contains template information for search and generate.
@@ -109,7 +114,7 @@ export class ScTemplate {
         }
     }
 
-    public Triple(param1: ScTemplateParam, param2: ScTemplateParam, param3: ScTemplateParam) : ScTemplate {
+    public Triple(param1: ScTemplateParam, param2: ScTemplateParam, param3: ScTemplateParam, is_required = true) : ScTemplate {
 
         const p1: ScTemplateValue = this.SplitTemplateParam(param1);
         const p2: ScTemplateValue = this.SplitTemplateParam(param2);
@@ -120,21 +125,22 @@ export class ScTemplate {
         this._triples.push({
             source: p1,
             edge: p2,
-            target: p3
+            target: p3,
+            options: { is_required: is_required }
         });
 
         return this;
     }
 
     public TripleWithRelation(param1: ScTemplateParam, param2: ScTemplateParam, param3: ScTemplateParam,
-                              param4: ScTemplateParam, param5: ScTemplateParam) : ScTemplate {
+                              param4: ScTemplateParam, param5: ScTemplateParam, is_required = true) : ScTemplate {
 
         let { alias, value } = this.SplitTemplateParam(param2);
         if (!alias)
             alias = `edge_1_${this._triples.length}`;
 
-        this.Triple(param1, [value, alias], param3);
-        this.Triple(param5, param4, alias);
+        this.Triple(param1, [value, alias], param3, is_required);
+        this.Triple(param5, param4, alias, is_required);
         
         return this;
     }
@@ -563,7 +569,8 @@ export class ScNet {
                     payload.push([
                         self.ProcessTripleItem(triple.source),
                         self.ProcessTripleItem(triple.edge),
-                        self.ProcessTripleItem(triple.target)
+                        self.ProcessTripleItem(triple.target),
+                        triple.options
                     ]);
                 });
             }

@@ -11,6 +11,7 @@ npm test
 
 ## Changelog
 **v0.2.x**
+  - Support optional template search with `ScNet`
   - Support triples in template results
   - Support scs templates with `ScNet`
   - Support resolve nodes by identifier with `ScNet`
